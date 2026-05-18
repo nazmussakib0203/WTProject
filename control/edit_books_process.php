@@ -2,6 +2,9 @@
 include_once '../config/db.php';
 include_once '../model/bookmodel.php';
 
+$mydb = new MyDB();
+$conn =$mydb -> createConn();
+
 $titleError = "";
 $authorError = "";
 $descriptionError = "";
@@ -9,6 +12,29 @@ $priceError = "";
 $categoryError = "";
 $imageError = "";
 $stockError = "";
+
+$title = "";
+$author = "";
+$description = "";
+$price = "";
+$category = "";
+$image = "";
+$stock = "";
+
+if(isset($_GET['id'])){
+    $id = $_GET['id'];
+    $result = getBooksById($id, $conn);
+
+    foreach($result as $book){
+        $title = $book['Title'];
+        $author = $book['Author'];
+        $description = $book['Description'];
+        $price = $book['Price'];
+        $category = $book['Category'];
+        $image = $book['Image'];
+        $stock = $book['Stock'];
+    }
+}
 
 if(isset($_POST["Submit"])){
     $title = $_POST["title"];
@@ -19,7 +45,7 @@ if(isset($_POST["Submit"])){
     $image = $_FILES["image"]["name"];
     $stock = $_POST["stock"];
     $hasError = false;
-
+    
     if($title == ""){
         $titleError = "Title is required";
         $hasError = true;
@@ -71,12 +97,13 @@ if(isset($_POST["Submit"])){
 
         $mydb = new MyDB();
         $conn = $mydb->createConn();
-        $result = createBooks($title, $author, $description, $price, $category, $image, $stock, $conn);
+        $result = updateBooks($id, $title, $author, $description, $price, $category, $image, $stock, $conn);
 
         if($result){
-            header("Location: ../view/listed_books.php");
+            echo "DB update successful!";
+            header("Location: listed_books.php");
         } else {
-            echo "DB insert failed!";
+            echo "DB update failed!";
         }
     }
 }

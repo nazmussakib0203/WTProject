@@ -6,7 +6,7 @@ include '../control/create_books_process.php';
     <body>
         <h2>Create Book</h2>
         <form name = "book_form" action = "" method = "post" enctype="multipart/form-data">
-            Title: <input type = "text" name ="title"><span style="color: red;"><?php echo $titleError; ?></span><br><br>
+            Title: <input type = "text" name ="title"><span style="color: red;"><?php echo $titleError; ?></span><br></br>
             Author: <input type = "text" name ="author"><span style="color: red;"><?php echo $authorError; ?></span><br><br>
             Description: <input type = "text" name ="description"><span style="color: red;"><?php echo $descriptionError; ?></span><br><br>
             Price: <input type = "text" name ="price"><span style="color: red;"><?php echo $priceError; ?></span><br><br>

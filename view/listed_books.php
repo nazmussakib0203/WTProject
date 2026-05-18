@@ -6,7 +6,10 @@
         <tr>
             <th>Title</th>
             <th>Author</th>
+            <th>Description</th>
             <th>Price</th>
+            <th>Category</th>
+            <th>Image</th>
             <th>Stock</th>
         </tr>
     </thead>

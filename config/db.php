@@ -20,4 +20,3 @@ class MyDB {
         $conn->close();
     }
 }
-?>

@@ -1,0 +1,83 @@
+<?php
+include '../config/db.php';
+include '../model/bookmodel.php';
+
+$titleError = "";
+$authorError = "";
+$descriptionError = "";
+$priceError = "";
+$categoryError = "";
+$imageError = "";
+$stockError = "";
+
+if(isset($_POST["Submit"])){
+    $title = $_POST["title"];
+    $author = $_POST["author"];
+    $description = $_POST["description"];
+    $price = $_POST["price"];
+    $category = $_POST["category"];
+    $image = $_FILES["image"]["name"];
+    $stock = $_POST["stock"];
+    $hasError = false;
+
+    if($title == ""){
+        $titleError = "Title is required";
+        $hasError = true;
+    }
+    if($author == ""){
+        $authorError = "Author is required";
+        $hasError = true;
+    }
+    if($description == ""){
+        $descriptionError = "Description is required";
+        $hasError = true;
+    }
+    if($price == ""){
+        $priceError = "Price is required";
+        $hasError = true;
+    }
+    if($price < 0){
+        $priceError = "Price must be greater than 0";
+        $hasError = true;
+    }
+    if($category == ""){
+        $categoryError = "Category is required";
+        $hasError = true;
+    }
+    if($_FILES["image"]["name"] == ""){
+        $imageError = "Image is required";
+        $hasError = true;
+    } else {
+        $allowedTypes = ["image/jpeg", "image/png"];
+        $maxSize = 2 * 1024 * 1024;
+
+        if(!in_array($_FILES["image"]["type"], $allowedTypes)){
+            $imageError = "Only JPEG or PNG allowed!";
+            $hasError = true;
+        }
+        if($_FILES["image"]["size"] > $maxSize){
+            $imageError = "Image must be 2MB or less!";
+            $hasError = true;
+        }
+    }
+    if($stock == ""){
+        $stockError = "Stock is required";
+        $hasError = true;
+    }
+
+    if($hasError == false){
+        $uploadFolder = $_SERVER['DOCUMENT_ROOT'] . "/BookStore/public/uploads/books/";
+        move_uploaded_file($_FILES["image"]["tmp_name"], $uploadFolder . $image);
+
+        $mydb = new MyDB();
+        $conn = $mydb->createConn();
+        $result = createBooks($title, $author, $description, $price, $category, $image, $stock, $conn);
+
+        if($result){
+            header("Location: ../view/listed_books.php");
+        } else {
+            echo "DB insert failed!";
+        }
+    }
+}
+?>

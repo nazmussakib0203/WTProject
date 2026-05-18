@@ -1,14 +1,23 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$dbname = "bookstore_db";
+class MyDB {
 
-$conn = mysqli_connect($host, $user, $pass, $dbname);
+    function createConn() {
+        $DBHOST = "localhost";
+        $DBUSER = "root";
+        $DBPASS = "";
+        $DBNAME = "bookstore";
 
-if (!$conn) {
-    header('Content-Type: application/json');
-    echo json_encode(["status" => "error", "message" => "Database connection failed"]);
-    exit();
+        $conn = new mysqli($DBHOST, $DBUSER, $DBPASS, $DBNAME);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        return $conn;
+    }
+
+    function closeConn($conn) {
+        $conn->close();
+    }
 }
 ?>

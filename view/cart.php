@@ -73,7 +73,7 @@ $total = $_SESSION['cart_total'];
         </div>
     <?php endif; ?>
 </div>
-<!-- শুধু এই লাইনটুকু রাখো -->
+
 <script src="../js/myscript.js">
 
 

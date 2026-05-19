@@ -191,6 +191,5 @@ function submitCart() {
     let total = document.getElementById('cart-total').innerText;
     alert('Order placed successfully! Total amount: ' + total + '\nThank you for shopping with us!');
     
-    // Optional: Redirect to home or clear cart
-    // window.location.href = '../control/clear_cart.php';
+   
 }

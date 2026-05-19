@@ -4,6 +4,8 @@ include_once("../control/admin_dashboard_process.php");
 <html>
     <head>
         <title>Admin Dashboard</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+
     </head>
     <body>
         <div class="dashboard">

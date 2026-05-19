@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>Customer List</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
     </head>
     <body>
         <h1>Customer List</h1>

@@ -2,7 +2,10 @@
 include '../control/edit_books_process.php';
 ?>
 <html>
-    <title>Edit Book</title>
+    <head>
+        <title>Edit Book</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+    </head>
     <body>
         <h2>Edit Book</h2>
         <form name = "book_form" action = "" method = "post" enctype="multipart/form-data">

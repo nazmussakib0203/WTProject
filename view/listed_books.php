@@ -1,5 +1,8 @@
 <html>
-    <title>Listed Books</title>
+    <head>
+        <title>Listed Books</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+    </head>
     <body>
         <table>
     <thead>

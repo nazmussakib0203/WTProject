@@ -2,7 +2,10 @@
 include '../control/create_books_process.php';
 ?>
 <html>
-    <title>Create Book</title>
+    <head>
+        <title>Create Book</title>
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
+    </head>
     <body>
         <h2>Create Book</h2>
         <form name = "book_form" action = "" method = "post" enctype="multipart/form-data" onsubmit="return validateForm()">

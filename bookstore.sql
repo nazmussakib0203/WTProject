@@ -1,133 +1,84 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: May 13, 2026 at 06:05 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Users table
+CREATE TABLE `users` (
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Role` varchar(30) NOT NULL DEFAULT 'customer',
+  `ProfilePicture` varchar(250) DEFAULT NULL,
+  `Address` varchar(200) DEFAULT NULL,
+  `Phone` varchar(20) DEFAULT NULL,
+  `CreatedAt` date NOT NULL,
+  PRIMARY KEY (`ID`)
+);
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+-- Categories table
+CREATE TABLE `categories` (
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(100) NOT NULL,
+  `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`)
+);
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `bookstore`
---
-
--- --------------------------------------------------------
-
---
--- Table structure for table `books`
---
-
+-- Books table
 CREATE TABLE `books` (
-  `ID` int(10) NOT NULL,
+  `ID` int(10) NOT NULL AUTO_INCREMENT,
   `Title` varchar(100) NOT NULL,
   `Author` varchar(100) NOT NULL,
   `Description` varchar(200) NOT NULL,
-  `Price` double(10,2) NOT NULL,
-  `Category ID` int(20) NOT NULL,
-  `Image` varchar(100) NOT NULL,
-  `Stock` int(10) NOT NULL,
-  `Creation Time` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `Price` decimal(10,2) NOT NULL,
+  `CategoryID` int(20) NOT NULL,
+  `Image` varchar(100) DEFAULT NULL,
+  `Stock` int(10) NOT NULL DEFAULT 0,
+  `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`CategoryID`) REFERENCES `categories`(`ID`)
+);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `cart`
---
-
+-- Cart table
 CREATE TABLE `cart` (
-  `ID` int(20) NOT NULL,
-  `User ID` int(20) NOT NULL,
-  `Book ID` int(20) NOT NULL,
-  `Quantity` int(10) NOT NULL,
-  `Addition Time` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `UserID` int(20) NOT NULL,
+  `BookID` int(20) NOT NULL,
+  `Quantity` int(10) NOT NULL DEFAULT 1,
+  `AddedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`UserID`) REFERENCES `users`(`ID`),
+  FOREIGN KEY (`BookID`) REFERENCES `books`(`ID`)
+);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `categories`
---
-
-CREATE TABLE `categories` (
-  `ID` int(20) NOT NULL,
-  `Name` varchar(100) NOT NULL,
-  `Creation Time` timestamp(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE current_timestamp(6)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order items`
---
-
-CREATE TABLE `order items` (
-  `ID` int(20) NOT NULL,
-  `Order ID` int(20) NOT NULL,
-  `Book ID` int(20) NOT NULL,
-  `Quantity` int(10) NOT NULL,
-  `Unit Price` double(10,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `orders`
---
-
+-- Orders table
 CREATE TABLE `orders` (
-  `ID` int(20) NOT NULL,
-  `User ID` int(20) NOT NULL,
-  `Total Amount` double(10,2) NOT NULL,
-  `Status` varchar(20) NOT NULL,
-  `Payment Method` varchar(20) NOT NULL,
-  `Order Date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `UserID` int(20) NOT NULL,
+  `TotalAmount` decimal(10,2) NOT NULL,
+  `Status` varchar(20) NOT NULL DEFAULT 'pending',
+  `PaymentMethod` varchar(20) NOT NULL,
+  `OrderDate` date NOT NULL,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`UserID`) REFERENCES `users`(`ID`)
+);
 
--- --------------------------------------------------------
+-- Order items table
+CREATE TABLE `order_items` (
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `OrderID` int(20) NOT NULL,
+  `BookID` int(20) NOT NULL,
+  `Quantity` int(10) NOT NULL,
+  `UnitPrice` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`OrderID`) REFERENCES `orders`(`ID`),
+  FOREIGN KEY (`BookID`) REFERENCES `books`(`ID`)
+);
 
---
--- Table structure for table `payments`
---
-
+-- Payments table
 CREATE TABLE `payments` (
-  `ID` int(20) NOT NULL,
-  `Order ID` int(20) NOT NULL,
-  `Amount` double(10,2) NOT NULL,
-  `Payment Method` varchar(20) NOT NULL,
-  `Transaction ID` int(20) NOT NULL,
-  `Payment Date` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-CREATE TABLE `users` (
-  `ID` int(20) NOT NULL,
-  `Name` varchar(100) NOT NULL,
-  `Email` varchar(100) NOT NULL,
-  `Password` varchar(20) NOT NULL,
-  `Role` varchar(30) NOT NULL,
-  `Profile Picture` varchar(250) NOT NULL,
-  `Address` varchar(200) NOT NULL,
-  `Phone` int(20) NOT NULL,
-  `Creation Time` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+  `ID` int(20) NOT NULL AUTO_INCREMENT,
+  `OrderID` int(20) NOT NULL,
+  `Amount` decimal(10,2) NOT NULL,
+  `PaymentMethod` varchar(20) NOT NULL,
+  `TransactionID` varchar(100) DEFAULT NULL,
+  `PaymentDate` date NOT NULL,
+  PRIMARY KEY (`ID`),
+  FOREIGN KEY (`OrderID`) REFERENCES `orders`(`ID`)
+);

@@ -1,28 +1,36 @@
 <?php
-require_once '../config/db.php';
+ob_clean();
+header('Content-Type: application/json');
+
 require_once '../model/mydb.php';
-require_once 'cart_helper.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if(!isset($_SESSION['user_id'])){
+    $_SESSION['user_id'] = 1;
+}
 
 $mydb = new MyDBFunctions();
 $conn = $mydb->createConn();
+$uid = $_SESSION['user_id'];
+$bid = $_POST['book_id'];
+$qty = $_POST['quantity'];
 
-$userId = getUserId();
-$bookId = $_POST['book_id'];
-$quantity = $_POST['quantity'];
-
-$stockCheck = $mydb->checkStock($bookId, $quantity, $conn);
-
-if(!$stockCheck){
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Insufficient stock']);
-    exit;
+$check = $conn->query("SELECT ID FROM cart WHERE UserID=$uid AND BookID=$bid");
+if($check->num_rows > 0){
+    $row = $check->fetch_assoc();
+    $conn->query("UPDATE cart SET Quantity=Quantity+$qty WHERE ID={$row['ID']}");
+}else{
+    $conn->query("INSERT INTO cart (UserID, BookID, Quantity) VALUES ($uid, $bid, $qty)");
 }
 
-$mydb->addToCart($userId, $bookId, $quantity, $conn);
-$cartCount = $mydb->getCartCount($userId, $conn);
+$res = $conn->query("SELECT SUM(Quantity) as total FROM cart WHERE UserID=$uid");
+$row = $res->fetch_assoc();
+$count = $row['total'] ?? 0;
 
-header('Content-Type: application/json');
-echo json_encode(['success' => true, 'cart_count' => $cartCount]);
-
-$mydb->closeConn($conn);
+echo '{"success":true,"cart_count":' . $count . '}';
+$conn->close();
+exit;
 ?>

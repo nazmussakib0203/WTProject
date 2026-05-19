@@ -1,36 +1,39 @@
 <?php
-require_once '../config/db.php';
-require_once '../model/mydb.php';
-require_once 'cart_helper.php';
-
-$mydb = new MyDBFunctions();
-$conn = $mydb->createConn();
-
-$userId = getUserId();
-$cartId = $_POST['cart_id'];
-$quantity = $_POST['quantity'];
-
-$mydb->updateCart($cartId, $userId, $quantity, $conn);
-
-$itemsResult = $mydb->getCartItems($userId, $conn);
-$total = $mydb->getCartTotal($userId, $conn);
-$cartCount = $mydb->getCartCount($userId, $conn);
-
-$subtotal = 0;
-while($item = $itemsResult->fetch_assoc()){
-    if($item['cart_id'] == $cartId){
-        $subtotal = $item['Price'] * $quantity;
-        break;
-    }
-}
-
+session_start();
 header('Content-Type: application/json');
-echo json_encode([
-    'success' => true,
-    'subtotal' => $subtotal,
-    'cart_total' => $total,
-    'cart_count' => $cartCount
-]);
 
-$mydb->closeConn($conn);
-?>
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart_id']) && isset($_POST['quantity'])) {
+    $cart_id = $_POST['cart_id'];
+    $new_qty = (int)$_POST['quantity'];
+    
+    $subtotal = 0;
+    $cart_total = 0;
+    $found = false;
+
+    if (isset($_SESSION['cart_items'])) {
+        foreach ($_SESSION['cart_items'] as &$item) {
+            if ($item['cart_id'] == $cart_id) {
+                $item['Quantity'] = $new_qty;
+                $item['subtotal'] = $item['Price'] * $new_qty; // subtotal calculate
+                $subtotal = $item['subtotal'];
+                $found = true;
+            }
+            $cart_total += $item['subtotal']; // net total recap
+        }
+        unset($item); // reference break
+        
+        $_SESSION['cart_total'] = $cart_total;
+    }
+
+    if ($found) {
+        echo json_encode([
+            'success' => true,
+            'subtotal' => $subtotal,
+            'cart_total' => $cart_total
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'error' => 'Item not found']);
+    }
+    exit;
+}
+echo json_encode(['success' => false, 'error' => 'Invalid Request']);

@@ -1,16 +1,24 @@
 <?php
-require_once '../config/db.php';
+error_reporting(0);
+ob_clean();
+header('Content-Type: application/json');
+
 require_once '../model/mydb.php';
-require_once 'cart_helper.php';
+session_start();
+
+if(!isset($_SESSION['user_id'])){
+    $_SESSION['user_id'] = 1;
+}
 
 $mydb = new MyDBFunctions();
 $conn = $mydb->createConn();
+$uid = $_SESSION['user_id'];
 
-$userId = getUserId();
-$count = $mydb->getCartCount($userId, $conn);
+$res = $conn->query("SELECT SUM(Quantity) as total FROM cart WHERE UserID=$uid");
+$row = $res->fetch_assoc();
+$count = $row['total'] ?? 0;
 
-header('Content-Type: application/json');
-echo json_encode(['count' => $count]);
-
-$mydb->closeConn($conn);
+echo json_encode(['count'=>$count]);
+$conn->close();
+exit;
 ?>

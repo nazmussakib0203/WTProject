@@ -1,63 +1,76 @@
-<?php
-require_once '../config/db.php';
-require_once '../model/mydb.php';
-require_once '../control/cart_helper.php';
+<?php 
+session_start(); 
 
-$userId = getUserId();
-$mydb = new MyDBFunctions();
-$conn = $mydb->createConn();
-$result = $mydb->getCartItems($userId, $conn);
-$total = $mydb->getCartTotal($userId, $conn);
+if(!isset($_SESSION['cart_items'])){
+    header('Location: ../control/cart_process.php');
+    exit;
+}
+
+$items = $_SESSION['cart_items'];
+$total = $_SESSION['cart_total'];
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Shopping Cart</title>
+    <link rel="stylesheet" href="../css/mystyle.css">
+    <script src="../js/myscript.js"></script>
 </head>
 <body>
 
-<div style="background:#333; color:white; padding:10px;">
-    <a href="home.php" style="color:white;">Home</a> | 
-    <a href="cart.php" style="color:white;">Cart (<span id="cart-count">0</span>)</a>
+<div class="navbar">
+    <div class="logo">Book<span>store</span></div>
+    <div class="nav-links">
+        <a href="../control/home_process.php">Home</a>
+        <a href="../control/cart_process.php">Cart</a>
+    </div>
 </div>
 
-<div style="padding:20px;">
+<div class="cart-container">
     <h2>Shopping Cart</h2>
-    
-    <?php if($result->num_rows == 0): ?>
-        <p>Your cart is empty.</p>
-        <a href="home.php">Continue Shopping</a>
+
+    <?php if(empty($items)): ?>
+        <div class="empty-cart">
+            <p>Your cart is empty.</p>
+            <a href="../control/home_process.php">Continue Shopping →</a>
+        </div>
     <?php else: ?>
-        <table border="1" cellpadding="10" style="width:100%;">
-            <tr bgcolor="#ddd">
-                <th>Book</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th>Action</th>
-            </tr>
-            <?php while($item = $result->fetch_assoc()): 
-                $subtotal = $item['Price'] * $item['Quantity'];
-            ?>
-            <tr id="row-<?php echo $item['cart_id']; ?>">
-                <td><?php echo $item['Title']; ?></td>
-                <td>$<?php echo $item['Price']; ?></td>
-                <td>
-                    <button onclick="updateQuantity(<?php echo $item['cart_id']; ?>, <?php echo $item['Quantity']-1; ?>)">-</button>
-                    <span id="qty-<?php echo $item['cart_id']; ?>"><?php echo $item['Quantity']; ?></span>
-                    <button onclick="updateQuantity(<?php echo $item['cart_id']; ?>, <?php echo $item['Quantity']+1; ?>)">+</button>
-                </td>
-                <td id="subtotal-<?php echo $item['cart_id']; ?>">$<?php echo number_format($subtotal, 2); ?></td>
-                <td><button onclick="removeItem(<?php echo $item['cart_id']; ?>)">Remove</button></td>
-            </tr>
-            <?php endwhile; ?>
-            <tr bgcolor="#ddd">
-                <td colspan="3" align="right"><strong>Total:</strong></td>
-                <td colspan="2"><strong id="cart-total">$<?php echo number_format($total, 2); ?></strong></td>
-            </tr>
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Book</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($items as $item): ?>
+                <tr id="row-<?php echo $item['cart_id']; ?>">
+                    <td class="book-title"><?php echo htmlspecialchars($item['Title']); ?></td>
+                    <td class="price">$<?php echo number_format($item['Price'], 2); ?></td>
+                    <td>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="changeQty(<?php echo $item['cart_id']; ?>, -1)">-</button>
+                            <span class="quantity-num" id="qty-<?php echo $item['cart_id']; ?>"><?php echo $item['Quantity']; ?></span>
+                            <button class="quantity-btn" onclick="changeQty(<?php echo $item['cart_id']; ?>, 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="price" id="sub-<?php echo $item['cart_id']; ?>">$<?php echo number_format($item['subtotal'], 2); ?></td>
+                    <td><button class="remove-btn" onclick="removeItem(<?php echo $item['cart_id']; ?>)">Remove</button></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
         </table>
-        <br>
-        <a href="home.php">Continue Shopping</a>
+
+        <div class="cart-total">
+            <strong>Grand Total:</strong> <span id="cart-total">$<?php echo number_format($total, 2); ?></span>
+        </div>
+
+        <div style="text-align:right;">
+            <button class="checkout-btn" onclick="submitCart()">✅ Confirm Order</button>
+        </div>
     <?php endif; ?>
 </div>
 
@@ -66,46 +79,68 @@ function updateCartCount() {
     fetch('../control/cart_count_process.php')
         .then(res => res.json())
         .then(data => {
-            document.getElementById('cart-count').innerText = data.count;
-        });
+            let span = document.getElementById('cart-count');
+            if(span) span.innerText = data.count;
+        })
+        .catch(err => console.error('Error:', err));
 }
 
-function updateQuantity(cartId, newQuantity) {
-    if(newQuantity < 1) {
-        removeItem(cartId);
-        return;
-    }
+function changeQty(cartId, change) {
+    let qtyElement = document.getElementById('qty-' + cartId);
+    if (!qtyElement) return;
     
+    let currentQty = parseInt(qtyElement.innerText);
+    let newQty = currentQty + change;
+    
+    if(newQty < 1) {
+        removeItem(cartId);
+    } else {
+        updateQty(cartId, newQty);
+    }
+}
+
+function updateQty(cartId, newQty) {
     fetch('../control/update_cart_process.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'cart_id=' + cartId + '&quantity=' + newQuantity
+        body: 'cart_id=' + cartId + '&quantity=' + newQty
     })
     .then(res => res.json())
     .then(data => {
         if(data.success) {
-            document.getElementById('qty-' + cartId).innerText = newQuantity;
-            document.getElementById('subtotal-' + cartId).innerText = '$' + parseFloat(data.subtotal).toFixed(2);
-            document.getElementById('cart-total').innerText = '$' + parseFloat(data.cart_total).toFixed(2);
+            document.getElementById('qty-' + cartId).innerText = newQty;
+            document.getElementById('sub-' + cartId).innerHTML = '$' + data.subtotal.toFixed(2);
+            document.getElementById('cart-total').innerHTML = '$' + data.cart_total.toFixed(2);
             updateCartCount();
         }
-    });
+    })
+    .catch(err => console.error('Error:', err));
 }
 
 function removeItem(cartId) {
-    if(!confirm('Remove this item?')) return;
-    
-    fetch('../control/remove_cart_process.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'cart_id=' + cartId
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            location.reload();
-        }
-    });
+    if(confirm('Remove this item?')) {
+        fetch('../control/remove_cart_process.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'cart_id=' + cartId
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                let row = document.getElementById('row-' + cartId);
+                if(row) row.remove();
+                document.getElementById('cart-total').innerHTML = '$' + data.cart_total.toFixed(2);
+                updateCartCount();
+                if(data.cart_total == 0) location.reload();
+            }
+        })
+        .catch(err => console.error('Error:', err));
+    }
+}
+
+function submitCart() {
+    let total = document.getElementById('cart-total').innerText;
+    alert('Order placed successfully!\nTotal: ' + total + '\nThank you for shopping!');
 }
 
 updateCartCount();

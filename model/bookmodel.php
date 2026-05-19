@@ -21,4 +21,5 @@ function deleteBooks($id, $conn) {
     $sql = "DELETE FROM books WHERE ID='$id'";
     return $conn->query($sql);
 }
+
 ?>

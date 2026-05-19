@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>Customer List</title>
+    </head>
+    <body>
+        <h1>Customer List</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Profile Picture</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Creation Time</th>
+            </tr>
+            <tbody>
+                <?php include_once("../control/customer_list_process.php"); ?>
+            </tbody>
+        </table>
+    </body>
+
+</html>

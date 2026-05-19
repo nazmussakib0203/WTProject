@@ -73,75 +73,9 @@ $total = $_SESSION['cart_total'];
         </div>
     <?php endif; ?>
 </div>
+<!-- শুধু এই লাইনটুকু রাখো -->
+<script src="../js/myscript.js">
 
-<script>
-function updateCartCount() {
-    fetch('../control/cart_count_process.php')
-        .then(res => res.json())
-        .then(data => {
-            let span = document.getElementById('cart-count');
-            if(span) span.innerText = data.count;
-        })
-        .catch(err => console.error('Error:', err));
-}
-
-function changeQty(cartId, change) {
-    let qtyElement = document.getElementById('qty-' + cartId);
-    if (!qtyElement) return;
-    
-    let currentQty = parseInt(qtyElement.innerText);
-    let newQty = currentQty + change;
-    
-    if(newQty < 1) {
-        removeItem(cartId);
-    } else {
-        updateQty(cartId, newQty);
-    }
-}
-
-function updateQty(cartId, newQty) {
-    fetch('../control/update_cart_process.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'cart_id=' + cartId + '&quantity=' + newQty
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success) {
-            document.getElementById('qty-' + cartId).innerText = newQty;
-            document.getElementById('sub-' + cartId).innerHTML = '$' + data.subtotal.toFixed(2);
-            document.getElementById('cart-total').innerHTML = '$' + data.cart_total.toFixed(2);
-            updateCartCount();
-        }
-    })
-    .catch(err => console.error('Error:', err));
-}
-
-function removeItem(cartId) {
-    if(confirm('Remove this item?')) {
-        fetch('../control/remove_cart_process.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'cart_id=' + cartId
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success) {
-                let row = document.getElementById('row-' + cartId);
-                if(row) row.remove();
-                document.getElementById('cart-total').innerHTML = '$' + data.cart_total.toFixed(2);
-                updateCartCount();
-                if(data.cart_total == 0) location.reload();
-            }
-        })
-        .catch(err => console.error('Error:', err));
-    }
-}
-
-function submitCart() {
-    let total = document.getElementById('cart-total').innerText;
-    alert('Order placed successfully!\nTotal: ' + total + '\nThank you for shopping!');
-}
 
 updateCartCount();
 </script>

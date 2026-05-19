@@ -1,5 +1,4 @@
 <?php
-// Core Controller Entry Mappings Router Configuration
 require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/CheckoutController.php';
 require_once __DIR__ . '/controllers/AdminOrderController.php';

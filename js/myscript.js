@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
         searchInput.addEventListener('keyup', searchBooks);
     }
 });
-// myscript.js এ যুক্ত করো:
+
 
 function updateCartCount() {
     fetch('../control/cart_count_process.php')

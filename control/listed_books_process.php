@@ -12,7 +12,7 @@ echo "<td>" . $book['Title'] . "</td>";
 echo "<td>" . $book['Author'] . "</td>";
 echo "<td>" . $book['Description'] . "</td>";
 echo "<td>" . $book['Price'] . "</td>";
-echo "<td>" . $book['Category'] . "</td>";
+echo "<td>" . $book['CategoryName'] . "</td>";
 echo "<td><img src='../public/uploads/books/" . $book['Image'] . "' alt='Book Image' width='100'></td>";
 echo "<td>" . $book['Stock'] . "</td>";
 echo "<td>

@@ -4,6 +4,7 @@ include_once '../model/bookmodel.php';
 
 $mydb = new MyDB();
 $conn =$mydb -> createConn();
+$categories = getCategories($conn); 
 
 $titleError = "";
 $authorError = "";
@@ -17,9 +18,10 @@ $title = "";
 $author = "";
 $description = "";
 $price = "";
-$category = "";
+$categoryID = "";
 $image = "";
 $stock = "";
+$id = "";
 
 if(isset($_GET['id'])){
     $id = $_GET['id'];
@@ -30,7 +32,7 @@ if(isset($_GET['id'])){
         $author = $book['Author'];
         $description = $book['Description'];
         $price = $book['Price'];
-        $category = $book['Category'];
+        $categoryID = $book['CategoryID'];
         $image = $book['Image'];
         $stock = $book['Stock'];
     }
@@ -41,7 +43,7 @@ if(isset($_POST["Submit"])){
     $author = $_POST["author"];
     $description = $_POST["description"];
     $price = $_POST["price"];
-    $category = $_POST["category"];
+    $categoryID = $_POST["category"];
     $image = $_FILES["image"]["name"];
     $stock = $_POST["stock"];
     $hasError = false;
@@ -66,7 +68,7 @@ if(isset($_POST["Submit"])){
         $priceError = "Price must be greater than 0";
         $hasError = true;
     }
-    if($category == ""){
+    if($categoryID == ""){
         $categoryError = "Category is required";
         $hasError = true;
     }
@@ -97,7 +99,7 @@ if(isset($_POST["Submit"])){
 
         $mydb = new MyDB();
         $conn = $mydb->createConn();
-        $result = updateBooks($id, $title, $author, $description, $price, $category, $image, $stock, $conn);
+        $result = updateBooks($id, $title, $author, $description, $price, $categoryID, $image, $stock, $conn);
 
         if($result){
             echo "DB update successful!";

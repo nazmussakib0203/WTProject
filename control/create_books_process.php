@@ -2,6 +2,10 @@
 include_once '../config/db.php';
 include_once '../model/bookmodel.php';
 
+$mydb = new MyDB();
+$conn = $mydb->createConn();
+$categories = getCategories($conn);
+
 $titleError = "";
 $authorError = "";
 $descriptionError = "";
@@ -15,7 +19,7 @@ if(isset($_POST["Submit"])){
     $author = $_POST["author"];
     $description = $_POST["description"];
     $price = $_POST["price"];
-    $category = $_POST["category"];
+    $categoryID = $_POST["category"];
     $image = $_FILES["image"]["name"];
     $stock = $_POST["stock"];
     $hasError = false;
@@ -40,7 +44,7 @@ if(isset($_POST["Submit"])){
         $priceError = "Price must be greater than 0";
         $hasError = true;
     }
-    if($category == ""){
+    if($categoryID == ""){
         $categoryError = "Category is required";
         $hasError = true;
     }
@@ -71,7 +75,7 @@ if(isset($_POST["Submit"])){
 
         $mydb = new MyDB();
         $conn = $mydb->createConn();
-        $result = createBooks($title, $author, $description, $price, $category, $image, $stock, $conn);
+        $result = createBooks($title, $author, $description, $price, $categoryID, $image, $stock, $conn);
 
         if($result){
             header("Location: ../view/listed_books.php");

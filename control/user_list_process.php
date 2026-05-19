@@ -16,7 +16,7 @@ if($result->num_rows > 0) {
         echo "<td><img src='../public/uploads/users/" . $user['ProfilePicture'] . "' alt='Profile Picture' width='100'></td>";
         echo "<td>" . $user['Address'] . "</td>";
         echo "<td>" . $user['Phone'] . "</td>";
-        echo "<td>" . $user['CreationTime'] . "</td>";
+        echo "<td>" . $user['CreatedAt'] . "</td>";
         echo "</tr>";
     }
 }

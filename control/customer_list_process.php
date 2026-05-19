@@ -16,7 +16,7 @@ if($result->num_rows > 0) {
         echo "<td><img src='../public/uploads/users/" . $customer['ProfilePicture'] . "' alt='Profile Picture' width='100'></td>";
         echo "<td>" . $customer['Address'] . "</td>";
         echo "<td>" . $customer['Phone'] . "</td>";
-        echo "<td>" . $customer['CreationTime'] . "</td>";
+        echo "<td>" . $customer['CreatedAt'] . "</td>";
         echo "<td>
             <a href='../control/remove_customer_process.php?customer_id=" . $customer['ID'] . "'>Delete</a>
             </td>";

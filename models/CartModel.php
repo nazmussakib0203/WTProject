@@ -9,7 +9,7 @@ class CartModel {
     }
 
     public function getCartItemsByUserId($userId) {
-        // Double check table and column casing to match bookstore 1.sql precisely
+        
         $sql = "SELECT c.ID as cart_id, c.Quantity, b.ID as book_id, b.Title, b.Price, b.Stock 
                 FROM cart c 
                 JOIN books b ON c.BookID = b.ID 

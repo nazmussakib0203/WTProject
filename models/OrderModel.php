@@ -12,17 +12,17 @@ class OrderModel {
         try {
             $this->db->beginTransaction();
 
-            // Explicitly matches your exact schema: ID, UserID, TotalAmount, Status, PaymentMethod, OrderDate
+         
             $orderSql = "INSERT INTO orders (UserID, TotalAmount, Status, PaymentMethod, OrderDate) VALUES (?, ?, 'pending', ?, CURDATE())";
             $stmt = $this->db->prepare($orderSql);
             $stmt->execute([$userId, $totalAmount, $paymentMethod]);
             $orderId = $this->db->lastInsertId();
 
-            // Insert into order_items matching exact column names
+            
             $itemSql = "INSERT INTO order_items (OrderID, BookID, Quantity, UnitPrice) VALUES (?, ?, ?, ?)";
             $itemStmt = $this->db->prepare($itemSql);
 
-            // Deduct from book stock records
+            
             $updateStockSql = "UPDATE books SET Stock = Stock - ? WHERE ID = ?";
             $stockStmt = $this->db->prepare($updateStockSql);
 
@@ -34,7 +34,7 @@ class OrderModel {
                 $stockStmt->execute([$item['Quantity'], $item['book_id']]);
             }
 
-            // Insert into payments matching exact column names
+            
             $txId = ($paymentMethod === 'Cash on Delivery') ? null : 'TXN-' . strtoupper(uniqid());
             $paySql = "INSERT INTO payments (OrderID, Amount, PaymentMethod, TransactionID, PaymentDate) VALUES (?, ?, ?, ?, CURDATE())";
             $payStmt = $this->db->prepare($paySql);

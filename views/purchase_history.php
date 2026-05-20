@@ -32,12 +32,12 @@
 </div>
 
 <script>
-// Format currency utility helper
+
 function formatMoney(amount) {
     return '$' + parseFloat(amount).toFixed(2);
 }
 
-// Function to fetch and update the order history table dynamically
+
 function fetchLivePurchaseHistory() {
     fetch('index.php?action=get_customer_history_json')
     .then(response => response.json())
@@ -87,17 +87,17 @@ function fetchLivePurchaseHistory() {
                 </table>
             `;
             
-            // Update the HTML container instantly without a full page reload
+            
             container.innerHTML = htmlOutput;
         }
     })
     .catch(error => console.error('Error fetching live data updates:', error));
 }
 
-// Run immediately on page load
+
 fetchLivePurchaseHistory();
 
-// Poll the server every 3000ms (3 seconds) to pull live database changes automatically
+
 setInterval(fetchLivePurchaseHistory, 3000);
 </script>
 

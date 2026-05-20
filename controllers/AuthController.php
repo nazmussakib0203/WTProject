@@ -17,7 +17,7 @@ class AuthController {
             $userModel = new UserModel();
             $user = $userModel->getUserByEmail($email);
 
-            // CHANGED HERE: Direct plain text password comparison instead of password_verify()
+            
             if ($user && $password === $user['Password']) {
                 $_SESSION['user_id'] = $user['ID'];
                 $_SESSION['name'] = $user['Name'];

@@ -111,7 +111,7 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         body: formData
     })
     .then(response => {
-        // Ensure the server returned a valid response
+        
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -119,7 +119,7 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     })
     .then(data => {
         if (data.status === 'success') {
-            // Instantly transition the client to the confirmation screen using the new order ID
+          
             window.location.href = 'index.php?action=confirmation&order_id=' + data.order_id;
         } else {
             errorDiv.textContent = 'Server Error: ' + data.message;

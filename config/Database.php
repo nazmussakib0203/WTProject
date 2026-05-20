@@ -1,8 +1,8 @@
 <?php
 class Database {
     private static $host = 'localhost';
-    private static $db_name = 'bookstore'; // Update with your actual database name
-    private static $username = 'root';     // Update credentials
+    private static $db_name = 'bookstore'; 
+    private static $username = 'root';     
     private static $password = '';
     private static $conn = null;
 

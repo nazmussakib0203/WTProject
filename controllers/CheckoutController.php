@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/OrderModel.php';
 
 class CheckoutController {
     
-    // Protection Gate wrapper verification
+    
     private function checkCustomerGate() {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'customer') {
             header("Location: index.php?action=login");
@@ -20,10 +20,10 @@ class CheckoutController {
         require __DIR__ . '/../views/checkout.php';
     }
 
-    // Handles checkout submission via AJAX
+    
     public function submitCheckout() {
         $this->checkCustomerGate();
-        header('Content-Type: application/json'); // Return formatted API responses JSON
+        header('Content-Type: application/json'); 
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             echo json_encode(['status' => 'error', 'message' => 'Invalid Request Method']);
@@ -33,7 +33,7 @@ class CheckoutController {
         $address = trim($_POST['address'] ?? '');
         $paymentMethod = trim($_POST['payment_method'] ?? '');
 
-        // Server-Side Validation Check
+        
         if (empty($address) || empty($paymentMethod)) {
             echo json_encode(['status' => 'error', 'message' => 'Please provide a valid delivery address and select a payment method.']);
             return;
@@ -49,14 +49,14 @@ class CheckoutController {
             return;
         }
 
-        // Calculate order total
+      
         $totalAmount = 0;
         foreach ($cartItems as $item) {
             $totalAmount += $item['Price'] * $item['Quantity'];
         }
 
         try {
-            // Place order and clear cart via database transaction
+            
             $orderId = $orderModel->placeOrder($userId, $totalAmount, $paymentMethod, $cartItems);
             $cartModel->clearCartByUserId($userId);
 
